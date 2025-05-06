@@ -123,8 +123,8 @@ You can find full documentation in the `docs/` folder, including:
 🧑‍💻 Team – University of Salerno
 ---------------------------------
 
-* [@student1](#)
-* [@student2](#)
+* [@francescopiocirillo]#https://github.com/francescopiocirillo
+* [@alefaso-lucky](#https://github.com/alefaso-lucky)
 
 * * *
 
