@@ -1,10 +1,22 @@
 from src.actors.CertifiedCommunicatingParty import CertifiedCommunicatingParty
 from src.certificate_authority.CertificateAuthority import CertificateAuthority
 from src.utils.CryptoUtils import CryptoUtils
+from src.actors.Student import Student
 
 # --- SET-UP DI STUDENTE, UNIVERSITA' E CERTIFICATE AUTHORITY
-student = CertifiedCommunicatingParty(
+student = Student(
     party_id="01",
+    matricola_casa="0123456789",
+    matricola_ospitante="0123456789",
+    nome="Mario",
+    cognome="Rossi",
+    email_casa="mario.rossi@studenti.casa.it",
+    email_ospitante="mario.rossi@etudiant.maison.fr",
+    data_di_nascita="01/01/2000",
+    codice_corso_di_laurea="LM-32",
+    nome_corso_di_laurea="Magistrale in Ingegneria Informatica",
+    cfu_totali_conseguiti=100,
+    media_voti=28.0
 )
 
 university_of_origin = CertifiedCommunicatingParty(
