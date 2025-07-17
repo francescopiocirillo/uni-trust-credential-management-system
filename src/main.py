@@ -68,8 +68,9 @@ student.set_up_symmetric_communication_from_info_received(session_info_decrypted
 
 # --- FASE B: RICHIESTA CERTIFICATO ALL'UNIVERSITA' ---
 student_certificate_request = student.ask_for_student_info_certificate()
-signature_of_tree_root, tree = university_of_origin.receive_student_info_certificate_request(student_certificate_request)
-student_university_information = [signature_of_tree_root, tree]
+encrypted_info = university_of_origin.receive_student_info_certificate_request(student_certificate_request)
+
+student.receive_student_info_certificate(encrypted_info)
 
 university_of_origin.end_symmetric_communication()
 student.end_symmetric_communication()
@@ -101,3 +102,7 @@ session_info_decrypted = student.decrypt_and_verify_message_asymmetric_encryptio
 student.set_up_symmetric_communication_from_info_received(session_info_decrypted)
 
 # --- FASE C: INVIO CERTIFICATO ALL'UNIVERSITA' ---
+#encrypted_request = host_university.request_info("email_casa")
+
+
+#student.receive_request_info(encrypted_request)

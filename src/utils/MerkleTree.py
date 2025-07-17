@@ -10,7 +10,7 @@ class MerkleTree:
     def sha256(data):
         return hashlib.sha256(data.encode('utf-8')).hexdigest()
 
-    def build_merkle_tree(data_list):
+    def build_merkle_tree(self, data_list):
         leaves = [MerkleTree.sha256(data) for data in data_list]
         tree = [leaves]
 
@@ -54,6 +54,51 @@ class MerkleTree:
 
         return current_hash == merkle_root
 
+    def get_merkle_proof(self, leaf_index: int):
+        """
+        Restituisce la proof per la foglia con indice `leaf_index`.
+
+        Output: lista di dizionari,
+                es. [{'hash': <sibling>, 'direction': 'right'}, …]
+                direction indica dove sta il *sibling* rispetto
+                al nodo in questione.
+        """
+        proof = []
+
+        for level in self.tree[:-1]:  # si ferma prima della root
+            if leaf_index % 2 == 0:  # foglia a sinistra
+                sibling_index = leaf_index + 1
+                direction = "right"
+            else:  # foglia a destra
+                sibling_index = leaf_index - 1
+                direction = "left"
+
+            # se abbiamo duplicato l’ultimo nodo per padding
+            if sibling_index >= len(level):
+                sibling_index = len(level) - 1
+
+            proof.append(
+                {"hash": level[sibling_index], "direction": direction}
+            )
+            leaf_index //= 2  # risali di livello
+
+        return proof
+
+    @staticmethod
+    def verify_data_with_proof(data: str, proof, merkle_root: str) -> bool:
+        """
+        Ricostruisce la root partendo dal dato e dalla proof.
+        Ritorna True se combacia con `merkle_root`.
+        """
+        current_hash = MerkleTree.sha256(data)
+        for p in proof:
+            if p["direction"] == "right":
+                current_hash = MerkleTree.sha256(current_hash + p["hash"])
+            else:  # left
+                current_hash = MerkleTree.sha256(p["hash"] + current_hash)
+        return current_hash == merkle_root
+"""
+
     def fernet_encrypt(data, key):
         fernet = Fernet(key)
         return fernet.encrypt(data.encode('utf-8'))
@@ -62,7 +107,6 @@ class MerkleTree:
     def fernet_decrypt(encrypted_data, key):
         fernet = Fernet(key)
         return fernet.decrypt(encrypted_data).decode('utf-8')
-"""
 if __name__ == "__main__":
     data_list = [
         "message_1", "message_2", "message_3", "message_4",

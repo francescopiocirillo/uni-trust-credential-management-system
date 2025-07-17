@@ -1,3 +1,5 @@
+import json
+
 from src.actors.CertifiedCommunicatingParty import CertifiedCommunicatingParty
 from typing import Optional, Dict
 
@@ -65,4 +67,13 @@ class University(CertifiedCommunicatingParty):
         data_list = student_info.to_data_list()
         merkle_tree = MerkleTree(data_list)
         merkle_tree_root_signature = CryptoUtils.sign_message_with_private_key(self.private_key, merkle_tree.root)
-        return merkle_tree_root_signature, merkle_tree.tree
+
+        payload = {
+            "merkle_tree_root_signature": merkle_tree_root_signature.decode("utf-8"),
+            "tree": json.dumps(merkle_tree.tree),
+        }
+        return CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(payload, self.symmetric_encryption_information)
+
+
+    def request_info(self, request: str) -> bytes:
+        return CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(request, self.symmetric_encryption_information)
