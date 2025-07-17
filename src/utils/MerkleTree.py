@@ -11,8 +11,8 @@ class MerkleTree:
         return hashlib.sha256(data.encode('utf-8')).hexdigest()
 
     def build_merkle_tree(self, data_list):
-        leaves = [MerkleTree.sha256(data) for data in data_list]
-        tree = [leaves]
+        #leaves = [MerkleTree.sha256(data) for data in data_list]
+        tree = [data_list]
 
         while len(tree[-1]) > 1:
             current_level = tree[-1]

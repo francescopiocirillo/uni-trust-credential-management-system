@@ -70,7 +70,7 @@ class University(CertifiedCommunicatingParty):
         data_list = student_info.to_data_list()
         merkle_tree = MerkleTree(data_list)
         merkle_tree_root_signature = CryptoUtils.sign_message_with_private_key(self.asymmetric_encryption_information.private_key, merkle_tree.root)
-
+        #print(merkle_tree.tree)
         payload = {
             "merkle_tree_root_signature": base64.b64encode(merkle_tree_root_signature).decode("utf-8"),
             "tree": json.dumps(merkle_tree.tree),

@@ -166,7 +166,6 @@ student.set_up_symmetric_communication_from_info_received(session_info_decrypted
 
 
 # --- FASE C: INVIO CERTIFICATO ALL'UNIVERSITA' ---
-#encrypted_request = host_university.request_info("email_casa")
+encrypted_request = host_university.request_info("email_casa")
 
-
-#student.receive_request_info(encrypted_request)
+student.receive_request_info(encrypted_request)

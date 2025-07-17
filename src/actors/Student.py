@@ -70,7 +70,7 @@ class Student(CertifiedCommunicatingParty):
         merkle_tree_root_signature = base64.b64decode(data["merkle_tree_root_signature"])
         tree = json.loads(data["tree"])
         student_university_information = [merkle_tree_root_signature, tree]
-        print(student_university_information[1])
+        #print(student_university_information[1])
         self.set_student_university_information(student_university_information)
 
     def set_student_university_information(self, student_university_information: Any) -> None:
