@@ -1,4 +1,7 @@
+import base64
 import json
+
+from cryptography.hazmat.primitives import padding
 
 from src.actors.CertifiedCommunicatingParty import CertifiedCommunicatingParty
 from typing import Optional, Dict
@@ -49,14 +52,14 @@ class University(CertifiedCommunicatingParty):
         print(f"{self.nome} ({self.codice_universita}) - {self.nazione}")
         print(f"Contatto: {self.email_contatto}")
 
-    def add_student_info(self, student_info: StudentInfo) -> None:
-        self.student_infos.update(student_info.matricola_casa, student_info)
+    def add_student_info(self, party_id: str, student_info: StudentInfo) -> None:
+        self.student_infos[party_id] = student_info
 
-    def get_student_info(self, matricola: str) -> StudentInfo:
-        return self.student_infos[matricola]
+    def get_student_info(self, party_id: str) -> StudentInfo:
+        return self.student_infos[party_id]
 
-    def remove_student_info(self, matricola: str) -> StudentInfo:
-        return self.student_infos.pop(matricola)
+    def remove_student_info(self, party_id: str) -> StudentInfo:
+        return self.student_infos.pop(party_id)
 
     def receive_student_info_certificate_request(self, request: bytes):
         info_request = self.receive_encrypted_message_symmetric_encryption(request)
@@ -66,14 +69,22 @@ class University(CertifiedCommunicatingParty):
         student_info = self.get_student_info(self.symmetric_encryption_information.get_interlocutor())
         data_list = student_info.to_data_list()
         merkle_tree = MerkleTree(data_list)
-        merkle_tree_root_signature = CryptoUtils.sign_message_with_private_key(self.private_key, merkle_tree.root)
+        merkle_tree_root_signature = CryptoUtils.sign_message_with_private_key(self.asymmetric_encryption_information.private_key, merkle_tree.root)
 
         payload = {
-            "merkle_tree_root_signature": merkle_tree_root_signature.decode("utf-8"),
+            "merkle_tree_root_signature": base64.b64encode(merkle_tree_root_signature).decode("utf-8"),
             "tree": json.dumps(merkle_tree.tree),
         }
-        return CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(payload, self.symmetric_encryption_information)
-
+        payload = json.dumps(payload)
+        ciphertext = CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(payload, self.symmetric_encryption_information)
+        self.symmetric_encryption_information.set_padder(
+            padding.PKCS7(128).padder()  # Pad del messaggio alla dimensione di un blocco AES
+        )
+        return ciphertext
 
     def request_info(self, request: str) -> bytes:
-        return CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(request, self.symmetric_encryption_information)
+        ciphertext = CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(request, self.symmetric_encryption_information)
+        self.symmetric_encryption_information.set_padder(
+            padding.PKCS7(128).padder()  # Pad del messaggio alla dimensione di un blocco AES
+        )
+        return ciphertext

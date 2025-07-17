@@ -192,6 +192,7 @@ class CertifiedCommunicatingParty:
             padding.PKCS7(128).padder()  # Pad del messaggio alla dimensione di un blocco AES
         )
         self.symmetric_encryption_information.set_mac_session_key(CryptoUtils.session_key_to_key_str(mac_key))
+        self.symmetric_encryption_information.set_interlocutor(self.asymmetric_encryption_information.get_interlocutor_information().id_of_the_certified_party)
 
     def send_information_symmetric_communication(self) -> bytes:
         session_info = {
@@ -234,7 +235,12 @@ class CertifiedCommunicatingParty:
         return CryptoUtils.decrypt_and_verify_message_asymmetric_encryption(ciphertext, self.asymmetric_encryption_information)
 
     def send_encrypted_message_symmetric_encryption(self, message: str) -> bytes:
-        return CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(message, self.symmetric_encryption_information)
+        ciphertext = CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(message, self.symmetric_encryption_information)
+        self.symmetric_encryption_information.set_padder(
+            padding.PKCS7(128).padder()  # Pad del messaggio alla dimensione di un blocco AES
+        )
+        return ciphertext
+
 
     def receive_encrypted_message_symmetric_encryption(self, ciphertext: bytes) -> None:
         decrypted_message = CryptoUtils.decrypt_and_verify_message_symmetric_encryption(ciphertext, self.symmetric_encryption_information)

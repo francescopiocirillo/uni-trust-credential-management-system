@@ -1,3 +1,4 @@
+from src.actors.StudentInfo import StudentInfo
 from src.certificate_authority.CertificateAuthority import CertificateAuthority
 from src.actors.Student import Student
 from src.actors.University import University
@@ -18,6 +19,20 @@ student = Student(
     media_voti=28.0
 )
 
+student_info = StudentInfo(
+    matricola_casa="0123456789",
+    matricola_ospitante="0123456789",
+    nome="Mario",
+    cognome="Rossi",
+    email_casa="mario.rossi@studenti.casa.it",
+    email_ospitante="mario.rossi@etudiant.maison.fr",
+    data_di_nascita="01/01/2000",
+    codice_corso_di_laurea="LM-32",
+    nome_corso_di_laurea="Magistrale in Ingegneria Informatica",
+    cfu_totali_conseguiti=100,
+    media_voti=28.0
+)
+
 university_of_origin = University(
     party_id="02",
     nome="Università degli Studi di Salerno",
@@ -25,6 +40,8 @@ university_of_origin = University(
     codice_universita="IT-SA01",
     email_contatto="relazioni.internazionali@unisa.it"
 )
+
+university_of_origin.add_student_info("01", student_info)
 
 host_university = University(
     party_id="03",
