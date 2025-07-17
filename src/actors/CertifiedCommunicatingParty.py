@@ -241,7 +241,7 @@ class CertifiedCommunicatingParty:
         return decrypted_message
 
     def end_symmetric_communication(self) -> bytes:
-        end_message_encrypted = CryptoUtils.encrypt_message_with_symmetric_cipher("End of Communication", self.symmetric_encryption_information.cipher, self.symmetric_encryption_information.padder)
+        end_message_encrypted = CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption("End of Communication", self.symmetric_encryption_information)
         self.symmetric_encryption_information = SymmetricEncryptionInformation()
         return end_message_encrypted
 
