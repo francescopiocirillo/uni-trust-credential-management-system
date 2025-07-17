@@ -1,16 +1,20 @@
 import base64
+import json
 import os
 from typing import Optional
 
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes, serialization, hmac
+from cryptography.hazmat.primitives.asymmetric import padding as asymmetric_padding
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey, RSAPublicKey
 from cryptography.hazmat.primitives.ciphers import Cipher
 from cryptography.hazmat.primitives.padding import PaddingContext
 from cryptography.hazmat.primitives import padding
 
+from src.utils.AsymmetricEncryptionInformation import AsymmetricEncryptionInformation
+from src.utils.SymmetricEncryptionInformation import SymmetricEncryptionInformation
 
 
 class CryptoUtils:
@@ -58,8 +62,8 @@ class CryptoUtils:
         message_bytes = message.encode('utf-8')
         ciphertext = public_key.encrypt(
             message_bytes,
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            asymmetric_padding.OAEP(
+                mgf=asymmetric_padding.MGF1(algorithm=hashes.SHA256()),
                 algorithm=hashes.SHA256(),
                 label=None
             )
@@ -79,8 +83,8 @@ class CryptoUtils:
         try:
             decrypted_message = private_key.decrypt(
                 ciphertext,
-                padding.OAEP(
-                    mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                asymmetric_padding.OAEP(
+                    mgf=asymmetric_padding.MGF1(algorithm=hashes.SHA256()),
                     algorithm=hashes.SHA256(),
                     label=None
                 )
@@ -103,9 +107,9 @@ class CryptoUtils:
         message_bytes = message.encode('utf-8')
         signature = private_key.sign(
             message_bytes,
-            padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH
+            asymmetric_padding.PSS(
+                mgf=asymmetric_padding.MGF1(hashes.SHA256()),
+                salt_length=asymmetric_padding.PSS.MAX_LENGTH
             ),
             hashes.SHA256()
         )
@@ -127,9 +131,9 @@ class CryptoUtils:
             public_key.verify(
                 signature,
                 message_bytes,
-                padding.PSS(
-                    mgf=padding.MGF1(hashes.SHA256()),
-                    salt_length=padding.PSS.MAX_LENGTH
+                asymmetric_padding.PSS(
+                    mgf=asymmetric_padding.MGF1(hashes.SHA256()),
+                    salt_length=asymmetric_padding.PSS.MAX_LENGTH
                 ),
                 hashes.SHA256()
             )
@@ -205,13 +209,57 @@ class CryptoUtils:
         )
         return private_key
 
+    # metodi di alto livello per la crittografia asimmetrica con autenticazione
+    @staticmethod
+    def sign_and_encrypt_message_asymmetric_encryption(message: str, asymmetric_encryption_information: AsymmetricEncryptionInformation) -> bytes:
+        signature = CryptoUtils.sign_message_with_private_key(asymmetric_encryption_information.get_private_key(), message)
+
+        encrypted_message = CryptoUtils.encrypt_message_with_public_key(
+            asymmetric_encryption_information.get_interlocutor_information().public_key_of_the_certified_party,
+            message
+        )
+
+        # codifica in base64
+        signature_b64 = base64.b64encode(signature).decode('utf-8')
+        encrypted_b64 = base64.b64encode(encrypted_message).decode('utf-8')
+
+        # preparazione payload da inviare
+        payload = {
+            'signature': signature_b64,
+            'ciphertext': encrypted_b64
+        }
+        return json.dumps(payload).encode('utf-8')
+
+    @staticmethod
+    def decrypt_and_verify_message_asymmetric_encryption(ciphertext: bytes, asymmetric_encryption_information: AsymmetricEncryptionInformation) -> Optional[str]:
+        try:
+            # Parse JSON e decode base64
+            payload = json.loads(ciphertext.decode('utf-8'))
+            signature = base64.b64decode(payload['signature'])
+            ciphertext = base64.b64decode(payload['ciphertext'])
+
+            # decriptazione del messaggio
+            decrypted_message = CryptoUtils.decrypt_message_with_private_key(asymmetric_encryption_information.get_private_key(), ciphertext)
+            if decrypted_message is None:
+                return None
+
+            # 3. verifica della firma
+            verified = CryptoUtils.verify_message_with_public_key(
+                asymmetric_encryption_information.get_interlocutor_information().public_key_of_the_certified_party,
+                signature,
+                decrypted_message
+            )
+            return decrypted_message if verified else None
+        except Exception:
+            return None
+
     """
     Metodi per la comunicazione simmetrice
     """
 
     @staticmethod
-    def encrypt_message_with_symmetric_cipher(message: bytes, cipher: Cipher, padder: PaddingContext) -> bytes:
-        padded_message = padder.update(message) + padder.finalize()
+    def encrypt_message_with_symmetric_cipher(message: str, cipher: Cipher, padder: PaddingContext) -> bytes:
+        padded_message = padder.update(message.encode("utf-8")) + padder.finalize()
 
         encryptor = cipher.encryptor()
         cipher_text = encryptor.update(padded_message) + encryptor.finalize()
@@ -250,3 +298,50 @@ class CryptoUtils:
         # Deserializzazione
         session_key = base64.b64decode(key_b64.encode('utf-8'))
         return session_key
+
+    # metodi di alto livello per la crittografia simmetrica autenticata
+    @staticmethod
+    def autenthicate_and_encrypt_message_symmetric_encryption(message: str,
+                                                              symmetric_encryption_information: SymmetricEncryptionInformation) -> bytes:
+        h = hmac.HMAC(CryptoUtils.key_str_to_session_key(symmetric_encryption_information.get_mac_session_key()), hashes.SHA256())
+        h.update(message.encode('utf-8'))
+        HMAC = h.finalize()
+
+        encrypted_message = CryptoUtils.encrypt_message_with_symmetric_cipher(message, symmetric_encryption_information.cipher, symmetric_encryption_information.padder)
+
+        # codifica in base64
+        signature_b64 = base64.b64encode(HMAC).decode('utf-8')
+        encrypted_b64 = base64.b64encode(encrypted_message).decode('utf-8')
+
+        # preparazione payload da inviare
+        payload = {
+            'hmac': signature_b64,
+            'ciphertext': encrypted_b64
+        }
+        return json.dumps(payload).encode('utf-8')
+
+    @staticmethod
+    def decrypt_and_verify_message_symmetric_encryption(ciphertext: bytes,
+                                                        symmetric_encryption_information: SymmetricEncryptionInformation) -> str:
+        # Decodifica del payload
+        payload = json.loads(ciphertext.decode('utf-8'))
+        hmac_b64 = payload['hmac']
+        ciphertext_b64 = payload['ciphertext']
+
+        # Decodifica base64
+        received_hmac = base64.b64decode(hmac_b64)
+        ciphertext = base64.b64decode(ciphertext_b64)
+
+        # Decifratura del messaggio
+        decrypted_message = CryptoUtils.decrypt_message_with_symmetric_cipher(ciphertext, symmetric_encryption_information.cipher)
+
+        # Verifica dell'HMAC
+        h = hmac.HMAC(CryptoUtils.key_str_to_session_key(symmetric_encryption_information.get_mac_session_key()), hashes.SHA256())
+        h.update(decrypted_message.encode('utf-8'))
+
+        try:
+            h.verify(received_hmac)
+        except InvalidSignature:
+            raise ValueError("HMAC verification failed. Message integrity cannot be guaranteed.")
+
+        return decrypted_message

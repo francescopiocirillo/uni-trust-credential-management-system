@@ -13,6 +13,8 @@ class SymmetricEncryptionInformation:
         self.session_key: Optional[str] = None
         self.iv: Optional[str] = None
         self.padder: Optional[PaddingContext] = None
+        self.mac_session_key: Optional[str] = None
+        self.id_of_the_interlocutor: Optional[str] = None
 
     # Getters and Setters
 
@@ -54,3 +56,15 @@ class SymmetricEncryptionInformation:
 
     def set_padder(self, padder: PaddingContext):
         self.padder = padder
+
+    def get_mac_session_key(self) -> Optional[str]:
+        return self.mac_session_key
+
+    def set_mac_session_key(self, mac_key: str):
+        self.mac_session_key = mac_key
+
+    def get_interlocutor(self) -> Optional[str]:
+        return self.id_of_the_interlocutor
+
+    def set_interlocutor(self, id_of_the_interlocutor: str):
+        self.id_of_the_interlocutor = id_of_the_interlocutor

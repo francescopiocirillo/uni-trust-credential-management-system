@@ -1,6 +1,4 @@
-from src.actors.CertifiedCommunicatingParty import CertifiedCommunicatingParty
 from src.certificate_authority.CertificateAuthority import CertificateAuthority
-from src.utils.CryptoUtils import CryptoUtils
 from src.actors.Student import Student
 from src.actors.University import University
 
@@ -20,7 +18,7 @@ student = Student(
     media_voti=28.0
 )
 
-university_of_origin = CertifiedCommunicatingParty(
+university_of_origin = University(
     party_id="02",
     nome="Università degli Studi di Salerno",
     nazione="Italia",
@@ -57,8 +55,12 @@ student.secure_key_distribution_protocol_receive_third_message(third_message)
 university_of_origin.set_up_symmetric_communication()
 session_info_encrypted = university_of_origin.send_information_symmetric_communication()
 
-session_info_decrypted = student.decrypt_message_asymmetric_encryption(session_info_encrypted)
+session_info_decrypted = student.decrypt_and_verify_message_asymmetric_encryption(session_info_encrypted)
 student.set_up_symmetric_communication_from_info_received(session_info_decrypted)
 
-#
+# --- FASE B: RICHIESTA CERTIFICATO ALL'UNIVERSITA' ---
+student_certificate_request = student.ask_for_student_info_certificate()
+signature_of_tree_root, tree = university_of_origin.receive_student_info_certificate_request(student_certificate_request)
+student_certificate = [signature_of_tree_root, tree]
 
+# --- FASE C: INVIO CERTIFICATO ALL'UNIVERSITA' ---
