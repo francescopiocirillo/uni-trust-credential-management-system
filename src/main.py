@@ -2,6 +2,7 @@ from src.actors.CertifiedCommunicatingParty import CertifiedCommunicatingParty
 from src.certificate_authority.CertificateAuthority import CertificateAuthority
 from src.utils.CryptoUtils import CryptoUtils
 from src.actors.Student import Student
+from src.actors.University import University
 
 # --- SET-UP DI STUDENTE, UNIVERSITA' E CERTIFICATE AUTHORITY
 student = Student(
@@ -21,6 +22,10 @@ student = Student(
 
 university_of_origin = CertifiedCommunicatingParty(
     party_id="02",
+    nome="Università degli Studi di Salerno",
+    nazione="Italia",
+    codice_universita="IT-SA01",
+    email_contatto="relazioni.internazionali@unisa.it"
 )
 
 certificate_authority = CertificateAuthority("ca_01")
