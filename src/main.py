@@ -78,7 +78,7 @@ university_of_origin.ask_for_certificate_of_identity(certificate_authority)
 print("=== MESSAGGIO 1 ===")
 print("Mittente     :   Studente")
 print("Destinatario :   Università di origine")
-print("Descrizione  :   Vertificato firmato dalla CA")
+print("Descrizione  :   Certificato firmato dalla CA")
 print("Contenuto    :   C_Stu = E(PR_{auth}, [T_1 || ID_Stu || PU_Stu])\n")
 student_certificate = student.send_certificate_of_identity()
 university_of_origin.receive_certificate_of_identity(student_certificate)
@@ -127,7 +127,7 @@ student.secure_key_distribution_protocol_receive_third_message(third_message)
 print("=== MESSAGGIO 6 ===")
 print("Mittente     :   Università di origine")
 print("Destinatario :   Studente")
-print("Descrizione  :   distribuzione chiave simmetrica")
+print("Descrizione  :   Distribuzione chiave simmetrica")
 print("Contenuto    :   E(PU_Stu, E(PR_U, K_S))\n\n")
 university_of_origin.set_up_symmetric_communication()
 session_info_encrypted = university_of_origin.send_information_symmetric_communication()
@@ -163,7 +163,7 @@ university_of_origin.end_symmetric_communication()
 student.end_symmetric_communication()
 
 # --- FASE A2: INIZIO COMUNICAZIONE STUDENTE - UNIVERSITA' OSPITANTE ---
-print("== FASE A == INIZIO COMUNICAZIONE STUDENTE - UNIVERSITA' DI ORIGINE ==\n")
+print("== FASE A == INIZIO COMUNICAZIONE STUDENTE - UNIVERSITA' OSPITANTE ==\n")
 
 # Set-up informazioni per la comunicazione asimmetrica
 host_university.set_up_asymmetric_communication_keys()
@@ -174,7 +174,7 @@ host_university.ask_for_certificate_of_identity(certificate_authority)
 print("=== MESSAGGIO 1 ===")
 print("Mittente     :   Studente")
 print("Destinatario :   Università ospitante")
-print("Descrizione  :   Vertificato firmato dalla CA")
+print("Descrizione  :   Certificato firmato dalla CA")
 print("Contenuto    :   C_Stu = E(PR_{auth}, [T_1 || ID_Stu || PU_Stu])\n")
 student_certificate = student.send_certificate_of_identity()
 host_university.receive_certificate_of_identity(student_certificate)
@@ -223,7 +223,7 @@ student.secure_key_distribution_protocol_receive_third_message(third_message)
 print("=== MESSAGGIO 6 ===")
 print("Mittente     :   Università ospitante")
 print("Destinatario :   Studente")
-print("Descrizione  :   distribuzione chiave simmetrica")
+print("Descrizione  :   Distribuzione chiave simmetrica")
 print("Contenuto    :   E(PU_Stu, E(PR_U, K_S))\n\n")
 host_university.set_up_symmetric_communication()
 session_info_encrypted = host_university.send_information_symmetric_communication()
@@ -270,13 +270,42 @@ student.receive_feedback_on_info_student(ack_nack)
 #student.end_symmetric_communication()
 
 # --- FASE E: REVOCA CERTIFICATO ---
+print("== FASE E == REVOCA CERTIFICATO ==\n")
+
+print("=== MESSAGGIO 1 ===")
+print("Mittente     :   Università ospitante")
+print("Destinatario :   Studente")
+print("Descrizione  :   Aggiunta alla CRL sulla blockchain del codice del certificato da revocare")
 university_of_origin.revoke_certificate("01", blockchain)
 
 # --- FASE C: INVIO CERTIFICATO ALL'UNIVERSITA' e FASE D VERIFICA CERTIFICATO ---
+print("== FASE C == INVIO CERTIFICATO ALL'UNIVERSITA' ==\n")
+
+# L'università fa una richiesta di informazioni secifiche allo studente
+print("=== MESSAGGIO 1 ===")
+print("Mittente     :   Università ospitante")
+print("Destinatario :   Studente")
+print("Descrizione  :   Richiesta informazioni specifiche")
+print("Contenuto    :   E(K_S, Richiesta mail_casa)\n")
 encrypted_request = host_university.request_info("email_casa")
 
+# Lo studente invia le informazioni alleganto il Markle Tree e tutti
+# i gli Hash dei nodi aggiuntivi necessari per il calcolo dell'autenticità
+print("=== MESSAGGIO 2 ===")
+print("Mittente     :   Studente")
+print("Destinatario :   Università ospitante")
+print("Descrizione  :   Informazioni specifiche richiesta con Markle Tree per verificarte l'auteticità")
+print("Contenuto    :   E(K_S, foglieRichiesteDelMerkleTree||nodiAggiuntiviDelMerkleTreePerIlCalcoloDellaRadice||E(K_U, RadiceMerkleTree))\n\n")
 encrypted_info_student = student.receive_request_info_and_send_info(encrypted_request)
 
+print("== FASE D == VERIFICA CERTIFICATO ==\n")
+
+print("=== MESSAGGIO 1 ===")
+print("Mittente     :   Università ospitante")
+print("Destinatario :   Studente")
+print("Descrizione  :   Notifica di ricezione di certificato corretto o no")
+print("Contenuto    :   E(K_S, ack/nack)\n")
+# L'università verifica le informazioni e notifica lo studente con un riscontro positivo o negativo
 # l'università ospitante ha bisogno di conoscere l'identità dell'università casa, per semplicità si passa la chiave pubblica come argomento
 ack_nack = host_university.receive_info_requested(encrypted_info_student, university_of_origin.asymmetric_encryption_information.public_key, blockchain)
 
