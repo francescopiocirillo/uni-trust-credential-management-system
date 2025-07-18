@@ -198,11 +198,30 @@ session_info_decrypted = student.decrypt_and_verify_message_asymmetric_encryptio
 student.set_up_symmetric_communication_from_info_received(session_info_decrypted)
 
 
-# --- FASE C: INVIO CERTIFICATO ALL'UNIVERSITA' e FASE D VERIFICA CERTIFICATO ---
+# --- FASE C e D: INVIO CERTIFICATO ALL'UNIVERSITA' e VERIFICA CERTIFICATO ---
+print("== FASE C == INVIO CERTIFICATO ALL'UNIVERSITA' ==\n")
+
+print("=== MESSAGGIO 1 ===")
+print("Mittente     :   Università ospitante")
+print("Destinatario :   Studente")
+print("Descrizione  :   Richiesta informazioni specifiche")
+print("Contenuto    :   E(K_S, Richiesta mail_casa)\n")
 encrypted_request = host_university.request_info("email_casa")
 
+print("=== MESSAGGIO 2 ===")
+print("Mittente     :   Studente")
+print("Destinatario :   Università ospitante")
+print("Descrizione  :   Informazioni specifiche richiesta con Markle Tree per verificarte l'auteticità")
+print("Contenuto    :   E(K_S, foglieRichiesteDelMerkleTree||nodiAggiuntiviDelMerkleTreePerIlCalcoloDellaRadice||E(K_U, RadiceMerkleTree))\n\n")
 encrypted_info_student = student.receive_request_info_and_send_info(encrypted_request)
 
+print("== FASE D == VERIFICA CERTIFICATO ==\n")
+
+print("=== MESSAGGIO 1 ===")
+print("Mittente     :   Università ospitante")
+print("Destinatario :   Studente")
+print("Descrizione  :   Notifica di ricezione di certificato corretto o no")
+print("Contenuto    :   E(K_S, ack/nack)\n")
 # l'università ospitante ha bisogno di conoscere l'identità dell'università casa, per semplicità si passa la chiave pubblica come argomento
 ack_nack = host_university.receive_info_requested(encrypted_info_student, university_of_origin.asymmetric_encryption_information.public_key, blockchain)
 
