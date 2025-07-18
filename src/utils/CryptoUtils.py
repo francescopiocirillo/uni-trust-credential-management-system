@@ -307,41 +307,48 @@ class CryptoUtils:
         h.update(message.encode('utf-8'))
         HMAC = h.finalize()
 
-        encrypted_message = CryptoUtils.encrypt_message_with_symmetric_cipher(message, symmetric_encryption_information.cipher, symmetric_encryption_information.padder)
-
         # codifica in base64
         signature_b64 = base64.b64encode(HMAC).decode('utf-8')
-        encrypted_b64 = base64.b64encode(encrypted_message).decode('utf-8')
 
-        # preparazione payload da inviare
         payload = {
             'hmac': signature_b64,
-            'ciphertext': encrypted_b64
+            'message': message
         }
-        return json.dumps(payload).encode('utf-8')
+
+        encrypted_payload = CryptoUtils.encrypt_message_with_symmetric_cipher(json.dumps(payload), symmetric_encryption_information.cipher, symmetric_encryption_information.padder)
+
+        return encrypted_payload
 
     @staticmethod
     def decrypt_and_verify_message_symmetric_encryption(ciphertext: bytes,
                                                         symmetric_encryption_information: SymmetricEncryptionInformation) -> str:
-        # Decodifica del payload
-        payload = json.loads(ciphertext.decode('utf-8'))
-        hmac_b64 = payload['hmac']
-        ciphertext_b64 = payload['ciphertext']
+        # Decrypt the ciphertext
+        decrypted_json = CryptoUtils.decrypt_message_with_symmetric_cipher(
+            ciphertext,
+            symmetric_encryption_information.cipher,
+        )
 
-        # Decodifica base64
-        received_hmac = base64.b64decode(hmac_b64)
-        ciphertext = base64.b64decode(ciphertext_b64)
+        # Convert JSON string to dictionary
+        payload = json.loads(decrypted_json)
 
-        # Decifratura del messaggio
-        decrypted_message = CryptoUtils.decrypt_message_with_symmetric_cipher(ciphertext, symmetric_encryption_information.cipher)
+        signature_b64 = payload['hmac']
+        message = payload['message']
 
-        # Verifica dell'HMAC
-        h = hmac.HMAC(CryptoUtils.key_str_to_session_key(symmetric_encryption_information.get_mac_session_key()), hashes.SHA256())
-        h.update(decrypted_message.encode('utf-8'))
+        # Decode base64 signature
+        signature = base64.b64decode(signature_b64)
 
+        # Recalculate HMAC
+        h = hmac.HMAC(
+            CryptoUtils.key_str_to_session_key(symmetric_encryption_information.get_mac_session_key()),
+            hashes.SHA256()
+        )
+        h.update(message.encode('utf-8'))
+
+        # Verify HMAC
         try:
-            h.verify(received_hmac)
+            h.verify(signature)
         except InvalidSignature:
-            raise ValueError("HMAC verification failed. Message integrity cannot be guaranteed.")
+            raise ValueError("HMAC non valido")
 
-        return decrypted_message
+        return message
+

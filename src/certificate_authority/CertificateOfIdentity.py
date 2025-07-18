@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 
 
@@ -32,6 +34,8 @@ class CertificateOfIdentity:
         self.public_key_of_the_certificate_authority = public_key_of_the_certificate_authority
         self.public_key_of_the_certified_party = public_key_of_the_certified_party
         self.signed_certificate = signed_certificate
+        self.time_stamp = datetime.now().isoformat()
+        #self.time_stamp = (datetime.now() - timedelta(days=60)).isoformat() TEST CERTIFICATO SCADUTO
 
     def __repr__(self):
         """
@@ -44,6 +48,7 @@ class CertificateOfIdentity:
                 f"id_of_the_certified_party='{self.id_of_the_certified_party}', "
                 f"public_key_of_the_certificate_authority='{self.public_key_of_the_certificate_authority}', "
                 f"public_key_of_the_certified_party='{self.public_key_of_the_certified_party}', "
+                f"timestamp='{self.time_stamp}', "
                 f"signed_certificate='{self.signed_certificate}')")
 
     def __str__(self):
@@ -55,23 +60,8 @@ class CertificateOfIdentity:
                 f"Certified Party ID: {self.id_of_the_certified_party}\n"
                 f"CA Public Key: {self.public_key_of_the_certificate_authority[:20]}...\n" # Output troncato per la UX
                 f"Party Public Key: {self.public_key_of_the_certified_party[:20]}...\n" # Output troncato per la UX
+                f"Timestamp: {self.time_stamp}\n"
                 f"Signed Certificate: {self.signed_certificate[:20]}...") # Output troncato per la UX
 
-# Esempio di utilizz:
 if __name__ == "__main__":
-    cert = CertificateOfIdentity(
-        id_of_the_certificate="cert123",
-        id_of_the_certificate_authority="ca_org",
-        id_of_the_certified_party="party_A",
-        public_key_of_the_certificate_authority="-----BEGIN PUBLIC KEY CA...",
-        public_key_of_the_certified_party="-----BEGIN PUBLIC KEY PARTY A...",
-        signed_certificate="-----BEGIN SIGNED CERTIFICATE..."
-    )
-
-    print("--- Certificate Details ---")
-    print(cert)
-
-    print(f"\nCertificate ID (accessed directly): {cert.id_of_the_certificate}")
-
-    print("\n--- Representation for Debugging ---")
-    print(repr(cert))
+    pass

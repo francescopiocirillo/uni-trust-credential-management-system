@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+from datetime import datetime, timedelta
 from typing import Optional, Dict
 
 from cryptography.hazmat.primitives import padding, hashes, hmac
@@ -59,7 +60,14 @@ class CertifiedCommunicatingParty:
         return self.asymmetric_encryption_information.get_certificate_of_identity()
 
     def receive_certificate_of_identity(self, interlocutor_certificate_of_identity: CertificateOfIdentity) -> None:
-        self.asymmetric_encryption_information.set_interlocutor_information(interlocutor_certificate_of_identity)
+        restored_dt = datetime.fromisoformat(interlocutor_certificate_of_identity.time_stamp)
+        now = datetime.now()
+        # Controlla se è passato più di un mese (approssimato come 30 giorni)
+        if now - restored_dt > timedelta(days=30):
+            print("È passato più di un mese dall'emissione del certificato, NON VALIDO.")
+        else:
+            print("NON è passato più di un mese, certificato accettato.")
+            self.asymmetric_encryption_information.set_interlocutor_information(interlocutor_certificate_of_identity)
 
     def secure_key_distribution_protocol_send_first_message(self) -> bytes:
         # si crea un payload con la propria identità e un nonce da mandare all'interlocutore

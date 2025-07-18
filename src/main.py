@@ -4,6 +4,9 @@ from src.certificate_authority.CertificateAuthority import CertificateAuthority
 from src.actors.Student import Student
 from src.actors.University import University
 
+from datetime import datetime, timedelta
+
+
 # --- SET-UP DEGLI ATTORI DEL SISTEMA ---
 
 # Creazione dello studente
@@ -61,6 +64,7 @@ host_university = University(
 # Creazione CA
 certificate_authority = CertificateAuthority("ca_01")
 
+# Creazione della blockchain
 blockchain = Blockchain()
 
 # --- FASE A1: INIZIO COMUNICAZIONE STUDENTE - UNIVERSITA' ---

@@ -82,7 +82,7 @@ class University(CertifiedCommunicatingParty):
 
         self.certificate_list[self.symmetric_encryption_information.get_interlocutor()] = merkle_tree_root_signature
 
-        print(self.certificate_list)
+        #print(self.certificate_list)
 
         payload = json.dumps(payload)
         ciphertext = CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(payload, self.symmetric_encryption_information)
@@ -101,7 +101,7 @@ class University(CertifiedCommunicatingParty):
     def receive_info_requested(self, encrypted_info: bytes, public_key: str, blockchain: Blockchain) -> bytes:
         decrypted_info = CryptoUtils.decrypt_and_verify_message_symmetric_encryption(encrypted_info, self.symmetric_encryption_information)
         decrypted_info = json.loads(decrypted_info)
-        print(decrypted_info)
+        #print(decrypted_info)
         data = decrypted_info["data"]
         proof = json.loads(decrypted_info["proof"])
         signature = base64.b64decode(decrypted_info["signature"])

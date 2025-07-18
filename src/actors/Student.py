@@ -74,7 +74,7 @@ class Student(CertifiedCommunicatingParty):
         merkle_tree_root_signature = base64.b64decode(data["merkle_tree_root_signature"])
         tree = json.loads(data["tree"])
         student_university_information = [merkle_tree_root_signature, tree]
-        print(student_university_information[1])
+        #print(student_university_information[1])
         self.set_student_university_information(student_university_information)
 
     def set_student_university_information(self, student_university_information: Any) -> None:
@@ -90,7 +90,7 @@ class Student(CertifiedCommunicatingParty):
                 break
         merkle_tree = MerkleTree.from_root_and_tree(self.student_university_information[1][-1][0], self.student_university_information[1])
         merkle_proof = MerkleTree.get_merkle_proof(merkle_tree, index)
-        print(merkle_proof)
+        #print(merkle_proof)
         payload = {
             "data": data[index],
             "proof": json.dumps(merkle_proof),
@@ -106,3 +106,8 @@ class Student(CertifiedCommunicatingParty):
 
     def receive_feedback_on_info_student(self, ack_nack: bytes) -> None:
         ack_nack = CryptoUtils.decrypt_and_verify_message_symmetric_encryption(ack_nack, self.symmetric_encryption_information)
+        print("Il certificato delle informazioni sullo studente è stato ")
+        if ack_nack == "ACK":
+            print("ACCETTATO")
+        else:
+            print("RIFIUTATO")

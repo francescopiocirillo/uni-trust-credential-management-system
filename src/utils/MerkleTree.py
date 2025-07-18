@@ -104,7 +104,7 @@ class MerkleTree:
                 current_hash = MerkleTree.sha256(current_hash + p["hash"])
             else:  # left
                 current_hash = MerkleTree.sha256(p["hash"] + current_hash)
-        print(current_hash)
+        #print(current_hash)
         return current_hash == merkle_root
 """
 
