@@ -201,6 +201,7 @@ encrypted_request = host_university.request_info("email_casa")
 
 encrypted_info_student = student.receive_request_info_and_send_info(encrypted_request)
 
+# l'università ospitante ha bisogno di conoscere l'identità dell'università casa, per semplicità si passa la chiave pubblica come argomento
 ack_nack = host_university.receive_info_requested(encrypted_info_student, university_of_origin.asymmetric_encryption_information.public_key)
 
 student.receive_feedback_on_info_student(ack_nack)
