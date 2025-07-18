@@ -6,6 +6,13 @@ class MerkleTree:
     def __init__(self, data_list):
         self.root, self.tree = self.build_merkle_tree(data_list)
 
+    @classmethod
+    def from_root_and_tree(cls, root, tree):
+        m_t = cls(["segnaposto"])
+        m_t.root = root
+        m_t.tree = tree
+        return m_t
+
     @staticmethod
     def sha256(data):
         return hashlib.sha256(data.encode('utf-8')).hexdigest()
@@ -91,11 +98,13 @@ class MerkleTree:
         Ritorna True se combacia con `merkle_root`.
         """
         current_hash = MerkleTree.sha256(data)
+        current_hash = data
         for p in proof:
             if p["direction"] == "right":
                 current_hash = MerkleTree.sha256(current_hash + p["hash"])
             else:  # left
                 current_hash = MerkleTree.sha256(p["hash"] + current_hash)
+        print(current_hash)
         return current_hash == merkle_root
 """
 

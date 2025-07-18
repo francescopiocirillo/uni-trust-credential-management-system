@@ -31,16 +31,16 @@ class StudentInfo:
 
     def to_data_list(self):
         return [
-            str(self.matricola_casa),
-            str(self.matricola_ospitante),
-            str(self.nome),
-            str(self.cognome),
-            str(self.email_casa),
-            str(self.email_ospitante),
-            str(self.data_di_nascita),
-            str(self.codice_corso_di_laurea),
-            str(self.nome_corso_di_laurea),
-            str(self.cfu_totali_conseguiti),
-            str(self.media_voti)
+            "matricola_casa:" + str(self.matricola_casa),
+            "matricola_ospitante:" + str(self.matricola_ospitante),
+            "nome:" + str(self.nome),
+            "cognome:" + str(self.cognome),
+            "email_casa:" + str(self.email_casa),
+            "email_ospitante:" + str(self.email_ospitante),
+            "data_di_nascita:" + str(self.data_di_nascita),
+            "codice_corso_di_laurea:" + str(self.codice_corso_di_laurea),
+            "nome_corso_di_laurea:" + str(self.nome_corso_di_laurea),
+            "cfu_totali_conseguiti:" + str(self.cfu_totali_conseguiti),
+            "media_voti:" + str(self.media_voti)
         ]
 

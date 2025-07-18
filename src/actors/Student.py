@@ -1,10 +1,12 @@
 import base64
 import json
+from heapq import merge
 from typing import Optional, Any
 
 from src.actors.CertifiedCommunicatingParty import CertifiedCommunicatingParty
 from src.actors.StudentInfo import StudentInfo
 from src.utils.CryptoUtils import CryptoUtils
+from src.utils.MerkleTree import MerkleTree
 
 
 class Student(CertifiedCommunicatingParty):
@@ -70,11 +72,30 @@ class Student(CertifiedCommunicatingParty):
         merkle_tree_root_signature = base64.b64decode(data["merkle_tree_root_signature"])
         tree = json.loads(data["tree"])
         student_university_information = [merkle_tree_root_signature, tree]
-        #print(student_university_information[1])
+        print(student_university_information[1])
         self.set_student_university_information(student_university_information)
 
     def set_student_university_information(self, student_university_information: Any) -> None:
         self.student_university_information = student_university_information
 
-    def receive_request_info(self, request: bytes) -> Any:
-        pass
+    def receive_request_info_and_send_info(self, request: bytes) -> Any:
+        decrypted_message = CryptoUtils.decrypt_and_verify_message_symmetric_encryption(request, self.symmetric_encryption_information)
+        data = self.student_university_information[1][0]
+        index = 0
+        for idx, item in enumerate(data):
+            if item.startswith(decrypted_message):
+                index = idx
+                break
+        merkle_tree = MerkleTree.from_root_and_tree(self.student_university_information[1][-1][0], self.student_university_information[1])
+        merkle_proof = MerkleTree.get_merkle_proof(merkle_tree, index)
+        print(merkle_proof)
+        payload = {
+            "data": data[index],
+            "proof": json.dumps(merkle_proof),
+            "signature": base64.b64encode(self.student_university_information[0]).decode("utf-8"),
+            "root": merkle_tree.root
+        }
+        payload = json.dumps(payload)
+        ciphertext = CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(payload, self.symmetric_encryption_information)
+        return ciphertext
+

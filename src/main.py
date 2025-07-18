@@ -133,8 +133,6 @@ print("Contenuto    :   E(K_S, MerkleTree||E(K_U, RadiceMerkleTree))\n")
 encrypted_info = university_of_origin.receive_student_info_certificate_request(student_certificate_request)
 student.receive_student_info_certificate(encrypted_info)
 
-
-
 university_of_origin.end_symmetric_communication()
 student.end_symmetric_communication()
 
@@ -168,4 +166,7 @@ student.set_up_symmetric_communication_from_info_received(session_info_decrypted
 # --- FASE C: INVIO CERTIFICATO ALL'UNIVERSITA' ---
 encrypted_request = host_university.request_info("email_casa")
 
-student.receive_request_info(encrypted_request)
+encrypted_info_student = student.receive_request_info_and_send_info(encrypted_request)
+
+ack_nack = host_university.receive_info_requested(encrypted_info_student, university_of_origin.asymmetric_encryption_information.public_key)
+print(ack_nack)

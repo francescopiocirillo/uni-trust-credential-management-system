@@ -88,3 +88,20 @@ class University(CertifiedCommunicatingParty):
             padding.PKCS7(128).padder()  # Pad del messaggio alla dimensione di un blocco AES
         )
         return ciphertext
+
+    def receive_info_requested(self, encrypted_info: bytes, public_key: str) -> str:
+        decrypted_info = CryptoUtils.decrypt_and_verify_message_symmetric_encryption(encrypted_info, self.symmetric_encryption_information)
+        decrypted_info = json.loads(decrypted_info)
+        print(decrypted_info)
+        data = decrypted_info["data"]
+        proof = json.loads(decrypted_info["proof"])
+        signature = base64.b64decode(decrypted_info["signature"])
+        root = decrypted_info["root"]
+
+        if CryptoUtils.verify_message_with_public_key(public_key, signature, root):
+            if MerkleTree.verify_data_with_proof(data, proof, root):
+                return "OK"
+            else:
+                return "QUASI OK"
+        else:
+            return "NO OK"
