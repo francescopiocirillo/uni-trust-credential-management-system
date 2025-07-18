@@ -247,6 +247,9 @@ class CertifiedCommunicatingParty:
         return decrypted_message
 
     def end_symmetric_communication(self) -> bytes:
+        self.symmetric_encryption_information.set_padder(
+            padding.PKCS7(128).padder()  # Pad del messaggio alla dimensione di un blocco AES
+        )
         end_message_encrypted = CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption("End of Communication", self.symmetric_encryption_information)
         self.symmetric_encryption_information = SymmetricEncryptionInformation()
         return end_message_encrypted

@@ -1,3 +1,4 @@
+from src.actors.Blockchain import Blockchain
 from src.actors.StudentInfo import StudentInfo
 from src.certificate_authority.CertificateAuthority import CertificateAuthority
 from src.actors.Student import Student
@@ -60,6 +61,7 @@ host_university = University(
 # Creazione CA
 certificate_authority = CertificateAuthority("ca_01")
 
+blockchain = Blockchain()
 
 # --- FASE A1: INIZIO COMUNICAZIONE STUDENTE - UNIVERSITA' ---
 print("== FASE A == INIZIO COMUNICAZIONE STUDENTE - UNIVERSITA' DI ORIGINE ==\n")
@@ -257,8 +259,26 @@ print("Mittente     :   Università ospitante")
 print("Destinatario :   Studente")
 print("Descrizione  :   Notifica di ricezione di certificato corretto o no")
 print("Contenuto    :   E(K_S, ack/nack)\n")
-# L'università verofica le informazioni e notifica lo studente con un riscontro positivo o negativo
-ack_nack = host_university.receive_info_requested(encrypted_info_student, university_of_origin.asymmetric_encryption_information.public_key)
+# L'università verifica le informazioni e notifica lo studente con un riscontro positivo o negativo
+# l'università ospitante ha bisogno di conoscere l'identità dell'università casa, per semplicità si passa la chiave pubblica come argomento
+ack_nack = host_university.receive_info_requested(encrypted_info_student, university_of_origin.asymmetric_encryption_information.public_key, blockchain)
+
+student.receive_feedback_on_info_student(ack_nack)
+
+# manteniamo aperta la comunicazione in modo da non doverla riaprire per verificare se la revoca funziona
+#host_university.end_symmetric_communication()
+#student.end_symmetric_communication()
+
+# --- FASE E: REVOCA CERTIFICATO ---
+university_of_origin.revoke_certificate("01", blockchain)
+
+# --- FASE C: INVIO CERTIFICATO ALL'UNIVERSITA' e FASE D VERIFICA CERTIFICATO ---
+encrypted_request = host_university.request_info("email_casa")
+
+encrypted_info_student = student.receive_request_info_and_send_info(encrypted_request)
+
+# l'università ospitante ha bisogno di conoscere l'identità dell'università casa, per semplicità si passa la chiave pubblica come argomento
+ack_nack = host_university.receive_info_requested(encrypted_info_student, university_of_origin.asymmetric_encryption_information.public_key, blockchain)
 
 student.receive_feedback_on_info_student(ack_nack)
 
