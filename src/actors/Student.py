@@ -3,6 +3,8 @@ import json
 from heapq import merge
 from typing import Optional, Any
 
+from cryptography.hazmat.primitives import padding
+
 from src.actors.CertifiedCommunicatingParty import CertifiedCommunicatingParty
 from src.actors.StudentInfo import StudentInfo
 from src.utils.CryptoUtils import CryptoUtils
@@ -97,6 +99,9 @@ class Student(CertifiedCommunicatingParty):
         }
         payload = json.dumps(payload)
         ciphertext = CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(payload, self.symmetric_encryption_information)
+        self.symmetric_encryption_information.set_padder(
+            padding.PKCS7(128).padder()  # Pad del messaggio alla dimensione di un blocco AES
+        )
         return ciphertext
 
     def receive_feedback_on_info_student(self, ack_nack: bytes) -> None:

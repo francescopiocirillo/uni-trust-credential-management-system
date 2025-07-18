@@ -3,6 +3,7 @@ import json
 
 from cryptography.hazmat.primitives import padding
 
+from src.actors.Blockchain import Blockchain
 from src.actors.CertifiedCommunicatingParty import CertifiedCommunicatingParty
 from typing import Optional, Dict
 
@@ -44,6 +45,8 @@ class University(CertifiedCommunicatingParty):
         self.codice_universita = codice_universita
         self.email_contatto = email_contatto
         self.student_infos: Dict[str, StudentInfo] = {}
+        self.certificate_list: Dict[str, str] = {}
+
 
     def describe(self):
         """
@@ -76,6 +79,11 @@ class University(CertifiedCommunicatingParty):
             "merkle_tree_root_signature": merkle_tree_root_signature,
             "tree": json.dumps(merkle_tree.tree),
         }
+
+        self.certificate_list[self.symmetric_encryption_information.get_interlocutor()] = merkle_tree_root_signature
+
+        print(self.certificate_list)
+
         payload = json.dumps(payload)
         ciphertext = CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(payload, self.symmetric_encryption_information)
         self.symmetric_encryption_information.set_padder(
@@ -90,13 +98,14 @@ class University(CertifiedCommunicatingParty):
         )
         return ciphertext
 
-    def receive_info_requested(self, encrypted_info: bytes, public_key: str) -> bytes:
+    def receive_info_requested(self, encrypted_info: bytes, public_key: str, blockchain: Blockchain) -> bytes:
         decrypted_info = CryptoUtils.decrypt_and_verify_message_symmetric_encryption(encrypted_info, self.symmetric_encryption_information)
         decrypted_info = json.loads(decrypted_info)
         print(decrypted_info)
         data = decrypted_info["data"]
         proof = json.loads(decrypted_info["proof"])
         signature = base64.b64decode(decrypted_info["signature"])
+
         root = decrypted_info["root"]
 
         reply = ""
@@ -108,5 +117,16 @@ class University(CertifiedCommunicatingParty):
         else:
             reply = "NACK"
 
+        if blockchain.is_revoked(decrypted_info["signature"]):
+            reply = "NACK"
+
+        print(reply)
         reply = CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(reply, self.symmetric_encryption_information)
+        self.symmetric_encryption_information.set_padder(
+            padding.PKCS7(128).padder()  # Pad del messaggio alla dimensione di un blocco AES
+        )
         return reply
+
+    def revoke_certificate(self, studente_id: str, blockchain: Blockchain) -> None:
+        blockchain.aggiungi_a_crl(self.certificate_list[studente_id])
+        print(f"certificato di {studente_id} revocato")
