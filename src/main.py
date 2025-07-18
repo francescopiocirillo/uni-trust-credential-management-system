@@ -196,10 +196,14 @@ session_info_decrypted = student.decrypt_and_verify_message_asymmetric_encryptio
 student.set_up_symmetric_communication_from_info_received(session_info_decrypted)
 
 
-# --- FASE C: INVIO CERTIFICATO ALL'UNIVERSITA' ---
+# --- FASE C: INVIO CERTIFICATO ALL'UNIVERSITA' e FASE D VERIFICA CERTIFICATO ---
 encrypted_request = host_university.request_info("email_casa")
 
 encrypted_info_student = student.receive_request_info_and_send_info(encrypted_request)
 
 ack_nack = host_university.receive_info_requested(encrypted_info_student, university_of_origin.asymmetric_encryption_information.public_key)
-print(ack_nack)
+
+student.receive_feedback_on_info_student(ack_nack)
+
+host_university.end_symmetric_communication()
+student.end_symmetric_communication()

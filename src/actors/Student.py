@@ -99,3 +99,5 @@ class Student(CertifiedCommunicatingParty):
         ciphertext = CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(payload, self.symmetric_encryption_information)
         return ciphertext
 
+    def receive_feedback_on_info_student(self, ack_nack: bytes) -> None:
+        ack_nack = CryptoUtils.decrypt_and_verify_message_symmetric_encryption(ack_nack, self.symmetric_encryption_information)

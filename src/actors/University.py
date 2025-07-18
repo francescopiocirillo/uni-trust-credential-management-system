@@ -89,7 +89,7 @@ class University(CertifiedCommunicatingParty):
         )
         return ciphertext
 
-    def receive_info_requested(self, encrypted_info: bytes, public_key: str) -> str:
+    def receive_info_requested(self, encrypted_info: bytes, public_key: str) -> bytes:
         decrypted_info = CryptoUtils.decrypt_and_verify_message_symmetric_encryption(encrypted_info, self.symmetric_encryption_information)
         decrypted_info = json.loads(decrypted_info)
         print(decrypted_info)
@@ -98,10 +98,14 @@ class University(CertifiedCommunicatingParty):
         signature = base64.b64decode(decrypted_info["signature"])
         root = decrypted_info["root"]
 
+        reply = ""
         if CryptoUtils.verify_message_with_public_key(public_key, signature, root):
             if MerkleTree.verify_data_with_proof(data, proof, root):
-                return "OK"
+                reply = "ACK"
             else:
-                return "QUASI OK"
+                reply = "NACK"
         else:
-            return "NO OK"
+            reply = "NACK"
+
+        reply = CryptoUtils.autenthicate_and_encrypt_message_symmetric_encryption(reply, self.symmetric_encryption_information)
+        return reply
