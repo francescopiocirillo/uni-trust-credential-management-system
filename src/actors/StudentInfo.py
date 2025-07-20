@@ -11,6 +11,25 @@ class StudentInfo:
                  nome_corso_di_laurea: str,
                  cfu_totali_conseguiti: int,
                  media_voti: float):
+        """
+       Inizializza un oggetto Student con le informazioni anagrafiche, accademiche e crittografiche.
+
+       Args:
+           party_id (str): Identificativo univoco del partecipante nella rete.
+           matricola_casa (str): Matricola dell'università di origine.
+           matricola_ospitante (str): Matricola presso l'università ospitante.
+           nome (str): Nome dello studente.
+           cognome (str): Cognome dello studente.
+           email_casa (str): Email istituzionale dell'università di origine.
+           email_ospitante (str): Email istituzionale dell'università ospitante.
+           data_di_nascita (str): Data di nascita dello studente (formato: gg/mm/aaaa).
+           codice_corso_di_laurea (str): Codice identificativo del corso di laurea.
+           nome_corso_di_laurea (str): Nome completo del corso di laurea.
+           cfu_totali_conseguiti (int): Numero totale di CFU ottenuti.
+           media_voti (float): Media dei voti dello studente.
+           public_key (Optional[str]): Chiave pubblica per la comunicazione sicura (in formato stringa).
+       private_key (Optional[str]): Chiave privata per la comunicazione sicura (in formato stringa).
+       """
         self.matricola_casa = matricola_casa
         self.matricola_ospitante = matricola_ospitante
         self.nome = nome

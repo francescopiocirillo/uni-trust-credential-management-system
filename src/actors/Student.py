@@ -19,43 +19,13 @@ class Student(CertifiedCommunicatingParty):
     def __init__(self,
                  party_id: str,
 
-                 matricola_casa: str,
-                 matricola_ospitante: str,
-                 nome: str,
-                 cognome: str,
-                 email_casa: str,
-                 email_ospitante: str,
-                 data_di_nascita: str,
-                 codice_corso_di_laurea: str,
-                 nome_corso_di_laurea: str,
-                 cfu_totali_conseguiti: int,
-                 media_voti: float,
+                 student_info: StudentInfo,
 
                  public_key: Optional[str] = None,
                  private_key: Optional[str] = None):
-        """
-       Inizializza un oggetto Student con le informazioni anagrafiche, accademiche e crittografiche.
 
-       Args:
-           party_id (str): Identificativo univoco del partecipante nella rete.
-           matricola_casa (str): Matricola dell'università di origine.
-           matricola_ospitante (str): Matricola presso l'università ospitante.
-           nome (str): Nome dello studente.
-           cognome (str): Cognome dello studente.
-           email_casa (str): Email istituzionale dell'università di origine.
-           email_ospitante (str): Email istituzionale dell'università ospitante.
-           data_di_nascita (str): Data di nascita dello studente (formato: gg/mm/aaaa).
-           codice_corso_di_laurea (str): Codice identificativo del corso di laurea.
-           nome_corso_di_laurea (str): Nome completo del corso di laurea.
-           cfu_totali_conseguiti (int): Numero totale di CFU ottenuti.
-           media_voti (float): Media dei voti dello studente.
-           public_key (Optional[str]): Chiave pubblica per la comunicazione sicura (in formato stringa).
-           private_key (Optional[str]): Chiave privata per la comunicazione sicura (in formato stringa).
-       """
         super().__init__(party_id=party_id, public_key=public_key, private_key=private_key)
-        self.student_info = StudentInfo(matricola_casa, matricola_ospitante, nome, cognome, email_casa,
-                                       email_ospitante, data_di_nascita, codice_corso_di_laurea,
-                                       nome_corso_di_laurea, cfu_totali_conseguiti, media_voti)
+        self.student_info = student_info
 
     def introduce(self):
         self.student_info.introduce()

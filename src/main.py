@@ -9,22 +9,6 @@ from datetime import datetime, timedelta
 
 # --- SET-UP DEGLI ATTORI DEL SISTEMA ---
 
-# Creazione dello studente
-student = Student(
-    party_id="01",
-    matricola_casa="0123456789",
-    matricola_ospitante="0123456789",
-    nome="Mario",
-    cognome="Rossi",
-    email_casa="mario.rossi@studenti.casa.it",
-    email_ospitante="mario.rossi@etudiant.maison.fr",
-    data_di_nascita="01/01/2000",
-    codice_corso_di_laurea="LM-32",
-    nome_corso_di_laurea="Magistrale in Ingegneria Informatica",
-    cfu_totali_conseguiti=100,
-    media_voti=28.0
-)
-
 #Creazione struttura contenente le informazioni dello studente
 student_info = StudentInfo(
     matricola_casa="0123456789",
@@ -38,6 +22,12 @@ student_info = StudentInfo(
     nome_corso_di_laurea="Magistrale in Ingegneria Informatica",
     cfu_totali_conseguiti=100,
     media_voti=28.0
+)
+
+# Creazione dello studente
+student = Student(
+    party_id="01",
+    student_info=student_info
 )
 
 # Creazione Università di origine
