@@ -1,5 +1,6 @@
 import base64
 import json
+import time
 
 from cryptography.hazmat.primitives import padding
 
@@ -11,6 +12,8 @@ from src.actors.StudentInfo import StudentInfo
 from src.utils.CryptoUtils import CryptoUtils
 from src.utils.MerkleTree import MerkleTree
 
+VERBOSE_MESSAGE_SIZE = False
+VERBOSE_MESSAGE_TIME = False
 
 class University(CertifiedCommunicatingParty):
     """
@@ -65,6 +68,8 @@ class University(CertifiedCommunicatingParty):
         return self.student_infos.pop(party_id)
 
     def receive_student_info_certificate_request(self, request: bytes):
+        start_time = time.perf_counter()
+
         info_request = self.receive_encrypted_message_symmetric_encryption(request)
         if info_request != "INFO REQUEST":
             return None
@@ -89,6 +94,17 @@ class University(CertifiedCommunicatingParty):
         self.symmetric_encryption_information.set_padder(
             padding.PKCS7(128).padder()  # Pad del messaggio alla dimensione di un blocco AES
         )
+
+        if VERBOSE_MESSAGE_SIZE:
+            print("Lunghezza informazioni accademiche: ", len("".join(data_list)))
+            print("Lunghezza informazioni accademiche certificate: ", len(payload))
+
+        end_time = time.perf_counter()
+        latency_ms = (end_time - start_time) * 1000  # tempo in millisecondi
+
+        if VERBOSE_MESSAGE_TIME:
+            print("Tempo per la creazione di un certificato accademico da parte dell'universita': ", latency_ms)
+
         return ciphertext
 
     def request_info(self, request: str) -> bytes:
@@ -99,6 +115,8 @@ class University(CertifiedCommunicatingParty):
         return ciphertext
 
     def receive_info_requested(self, encrypted_info: bytes, public_key: str, blockchain: Blockchain) -> bytes:
+        start_time = time.perf_counter()
+
         decrypted_info = CryptoUtils.decrypt_and_verify_message_symmetric_encryption(encrypted_info, self.symmetric_encryption_information)
         decrypted_info = json.loads(decrypted_info)
         #print(decrypted_info)
@@ -125,6 +143,13 @@ class University(CertifiedCommunicatingParty):
         self.symmetric_encryption_information.set_padder(
             padding.PKCS7(128).padder()  # Pad del messaggio alla dimensione di un blocco AES
         )
+
+        end_time = time.perf_counter()
+        latency_ms = (end_time - start_time) * 1000  # tempo in millisecondi
+
+        if VERBOSE_MESSAGE_TIME:
+            print("Tempo per la verifica di un certificato accademico da parte dell'universita': ", latency_ms)
+
         return reply
 
     def revoke_certificate(self, studente_id: str, blockchain: Blockchain) -> None:

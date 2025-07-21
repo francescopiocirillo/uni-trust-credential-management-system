@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import time
 from typing import Optional
 
 from cryptography.exceptions import InvalidSignature
@@ -16,6 +17,8 @@ from cryptography.hazmat.primitives import padding
 from src.utils.AsymmetricEncryptionInformation import AsymmetricEncryptionInformation
 from src.utils.SymmetricEncryptionInformation import SymmetricEncryptionInformation
 
+VERBOSE_MESSAGE_SIZE = False
+VERBOSE_MESSAGE_TIME = False
 
 class CryptoUtils:
 
@@ -212,6 +215,8 @@ class CryptoUtils:
     # metodi di alto livello per la crittografia asimmetrica con autenticazione
     @staticmethod
     def sign_and_encrypt_message_asymmetric_encryption(message: str, asymmetric_encryption_information: AsymmetricEncryptionInformation) -> bytes:
+        start_time = time.perf_counter()
+
         signature = CryptoUtils.sign_message_with_private_key(asymmetric_encryption_information.get_private_key(), message)
 
         encrypted_message = CryptoUtils.encrypt_message_with_public_key(
@@ -228,11 +233,25 @@ class CryptoUtils:
             'signature': signature_b64,
             'ciphertext': encrypted_b64
         }
+
+        if VERBOSE_MESSAGE_SIZE:
+            print("Lunghezza del messaggio: ", len(message))
+            print("Lunghezza del messaggio criptato e firmato (crittografia asimmetrica): ", len(json.dumps(payload).encode('utf-8')))
+
+        end_time = time.perf_counter()
+        latency_ms = (end_time - start_time) * 1000  # tempo in millisecondi
+
+        if VERBOSE_MESSAGE_TIME:
+            short_message = message if len(message) <= 25 else message[:25] + "..."
+            print(f"Delay introdotto dalla crittografia asimmetrica (encryption di {short_message}): ", latency_ms)
+
         return json.dumps(payload).encode('utf-8')
 
     @staticmethod
     def decrypt_and_verify_message_asymmetric_encryption(ciphertext: bytes, asymmetric_encryption_information: AsymmetricEncryptionInformation) -> Optional[str]:
         try:
+            start_time = time.perf_counter()
+
             # Parse JSON e decode base64
             payload = json.loads(ciphertext.decode('utf-8'))
             signature = base64.b64decode(payload['signature'])
@@ -249,6 +268,13 @@ class CryptoUtils:
                 signature,
                 decrypted_message
             )
+
+            end_time = time.perf_counter()
+            latency_ms = (end_time - start_time) * 1000  # tempo in millisecondi
+
+            if VERBOSE_MESSAGE_TIME:
+                print("Delay introdotto dalla crittografia asimmetrica (decryption): ", latency_ms)
+
             return decrypted_message if verified else None
         except Exception:
             return None
@@ -303,6 +329,7 @@ class CryptoUtils:
     @staticmethod
     def autenthicate_and_encrypt_message_symmetric_encryption(message: str,
                                                               symmetric_encryption_information: SymmetricEncryptionInformation) -> bytes:
+        start_time = time.perf_counter()
         h = hmac.HMAC(CryptoUtils.key_str_to_session_key(symmetric_encryption_information.get_mac_session_key()), hashes.SHA256())
         h.update(message.encode('utf-8'))
         HMAC = h.finalize()
@@ -317,11 +344,24 @@ class CryptoUtils:
 
         encrypted_payload = CryptoUtils.encrypt_message_with_symmetric_cipher(json.dumps(payload), symmetric_encryption_information.cipher, symmetric_encryption_information.padder)
 
+        if VERBOSE_MESSAGE_SIZE:
+            print("Lunghezza del messaggio: ", len(message))
+            print("Lunghezza del messaggio criptato e firmato (crittografia simmetrica): ", len(encrypted_payload))
+
+        end_time = time.perf_counter()
+        latency_ms = (end_time - start_time) * 1000  # tempo in millisecondi
+
+        if VERBOSE_MESSAGE_TIME:
+            short_message = message if len(message) <= 25 else message[:25] + "..."
+            print(f"Delay introdotto dalla crittografia simmetrica (encryption di {short_message}): ", latency_ms)
+
         return encrypted_payload
 
     @staticmethod
     def decrypt_and_verify_message_symmetric_encryption(ciphertext: bytes,
                                                         symmetric_encryption_information: SymmetricEncryptionInformation) -> str:
+        start_time = time.perf_counter()
+
         # Decrypt the ciphertext
         decrypted_json = CryptoUtils.decrypt_message_with_symmetric_cipher(
             ciphertext,
@@ -349,6 +389,12 @@ class CryptoUtils:
             h.verify(signature)
         except InvalidSignature:
             raise ValueError("HMAC non valido")
+
+        end_time = time.perf_counter()
+        latency_ms = (end_time - start_time) * 1000  # tempo in millisecondi
+
+        if VERBOSE_MESSAGE_TIME:
+            print("Delay introdotto dalla crittografia simmetrica (decryption): ", latency_ms)
 
         return message
 
