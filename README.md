@@ -150,7 +150,8 @@ All these information are contained in the file `Documentazione_APS_gruppo06_Cir
 │   ├── main_documentato.ipynb
 │   └── main.py
 ├── LICENSE
-└── README.md
+├── README.md
+└── requirements.txt
 ```
 
 * * *
