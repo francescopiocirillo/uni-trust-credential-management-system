@@ -1,101 +1,122 @@
 🔐 Uni-Trust: Decentralized Academic Credential System
 =====================================================
 
-> 🚀 A privacy-preserving, decentralized system for managing academic credentials, built for international student mobility programs like Erasmus. Designed with a modular architecture and security-first principles as part of a university project.
+> 🚀 A **decentralized academic credential sharing system** with **selective disclosure** and **revocation support**, implemented using **Merkle Trees**, **blockchain-based revocation lists**, and **secure key exchange protocols**. Designed and developed as part of a university project for the _Algorithms and Protocols for Security_ course.
 
 * * *
 
 📌 Overview
 -----------
 
-**Uni-Trust** is a secure and interoperable system for issuing, selectively disclosing, and revoking **academic credentials**. It was developed as part of a team project for a graduate-level security engineering course, and reflects a real-world design and development workflow with strong emphasis on **privacy**, **verifiability**, and **cross-border compatibility**.
+**Uni-Trust** is a **secure academic credential management system** enabling **students, universities, and certification authorities** to exchange credentials in a **privacy-preserving**, **verifiable**, and **revocable** manner.
+
+This project was developed at the **University of Salerno** as a practical application of cryptographic techniques to improve **student mobility programs** such as Erasmus, reducing reliance on centralized authorities and improving **trust** and **interoperability** between institutions.
 
 ### 📁 Project Highlights
 
-* ✅ Verifiable credentials based on W3C standards  
-* 🧠 Selective disclosure using cryptographic proofs  
-* 🔄 Decentralized Identifiers (DIDs) for identity management  
-* 🚫 Revocable and non-transferable credential issuance  
-* 📊 Formal threat model and security analysis  
-* 🧪 Prototype with performance evaluation  
-* 📌 Focus on constrained devices (e.g., smartphones)
+* ✅ **Selective disclosure** of academic credentials using **Merkle Trees**
+    
+* 🔐 **Decentralized revocation management** via **blockchain-based Certificate Revocation Lists (CRLs)**
+    
+* 🔑 **Mutual authentication** and **secure key distribution protocols** to establish session keys
+    
+* 🧾 **Rich credential structure** supporting personal data, courses, exams, degrees, and attendance records
+    
+* 📊 **Performance analysis** on credential size, cryptographic overhead, and latency
+    
+* 🧪 **Threat modeling** and **security analysis** covering common attack vectors
+    
 
 * * *
 
 🌍 Language Note
 ----------------
 
-All internal documentation and diagrams are written in **Italian**, as the project was developed during a group exam at the **University of Salerno (Italy)**.
+All **code comments and internal documentation** are written in **Italian**, as the project was developed during a group exam at the **University of Salerno (Italy)**.
 
-However, all code, protocol specifications, and technical elements are written following **international best practices**, and are understandable by developers worldwide.
+Despite this, the **codebase follows international best practices**, with clear method names and class structures that make it easily understandable for global developers and recruiters.
 
 * * *
 
 💡 Features
 -----------
 
-### 🎓 Credential Lifecycle
+### 🧾 Credential Management
 
-* Credential issuance by an authorized university  
-* Verifiable presentation to another institution  
-* Selective attribute disclosure  
-* Efficient revocation support  
+* **Issuance** of academic credentials by universities
+    
+* **Selective disclosure** of only necessary fields (e.g., specific course completions)
+    
+* **Verifiable Merkle proofs** for disclosed credentials
+    
 
-### 🛡️ Security Properties
+### 🔐 Security & Privacy
 
-* Integrity and authenticity via digital signatures  
-* Privacy via selective disclosure and unlinkability  
-* Resistance to forgery, replay attacks, and identity theft  
-* Local-first architecture to minimize external dependencies  
+* **RSA asymmetric encryption** for identity validation and signing
+    
+* **AES symmetric encryption** for session communication
+    
+* **Secure key distribution protocol** using nonces and identity verification
+    
+* **Blockchain-based revocation** of credentials to ensure real-time trust
+    
 
-### 📶 Interoperability
+### 🧮 Advanced Capabilities
 
-* Based on **W3C Verifiable Credentials** and **DIDs**  
-* Suitable for integration with existing identity ecosystems  
-* No centralized trust anchor required  
+* **Merkle Tree–based credential structure** enabling partial disclosure without exposing full datasets
+    
+* **Revocation List (CRL)** management on a decentralized blockchain (the blockchain interaction is simulated as it was beyond the scope of the project)
+    
+* **Resilience to attacks** like man-in-the-middle, identity theft, and credential tampering
+    
 
 * * *
 
 🧠 Development Process
 ----------------------
 
-> Developed over 8 weeks as a capstone project, following a milestone-based plan with parallel task assignments.
+> Developed within a structured **university project framework** (Project Work), with clearly defined **work packages** for modeling, design, security analysis, and implementation.
 
-1. ✅ **Modeling & Requirement Analysis**  
-2. 🔐 **Threat Modeling & Security Objectives**  
-3. 🧱 **Protocol Design & System Architecture**  
-4. 💻 **Proof-of-concept Implementation**  
-5. 📊 **Performance Evaluation**  
-6. 📄 **Final Documentation and Presentation**  
-
-Each team member was responsible for two distinct work packages (WPs).
+1. **Requirements Analysis & Threat Modeling** (WP1)
+    
+2. **System Design**: Credential structure, secure exchange, revocation handling (WP2)
+    
+3. **Security Analysis**: Evaluation against defined adversary models (WP3)
+    
+4. **Implementation**: Modular Python code with cryptographic best practices (WP4)
+    
 
 * * *
 
-🧪 Testing & Evaluation
-------------------------
+🧪 Testing
+----------
 
-Although the system is not a production-grade tool, a simulated **proof-of-concept** was built to evaluate:
+The system has been tested with:
 
-* Credential size on constrained devices  
-* Verification latency  
-* Cryptographic overhead  
-* Revocation mechanisms  
-
-Results and benchmarks are available in the `WP4_Implementation/results/` folder.
+* **Unit tests** for encryption/decryption, Merkle Tree verification, and proof generation
+    
+* **Simulated communication workflows** between students and universities
+    
+* **Latency and overhead analysis** for cryptographic operations
+    
 
 * * *
 
 📋 Documentation
 ----------------
 
-You can find full documentation in the `docs/` folder, including:
+Inside the `docs/` folder, you’ll find:
 
-* **Threat Model** – Adversary capabilities and system resilience  
-* **Architecture & Protocol Diagrams** – Credential lifecycle and message flows  
-* **Security Analysis** – Formal reasoning against defined attacks  
-* **User Scenarios** – Example flows for Erasmus student credential usage  
-* **Work Package Reports** – Breakdown of individual contributions  
+* **Requirements & Threat Model Report**: Identifies key actors, goals, and attack vectors
+    
+* **System Design Document**: Describes credential structures, data flows, and protocols
+    
+* **Security Analysis Report**: Evaluates resilience against identified threats
+    
+* **Performance Evaluation**: Overhead and latency benchmarks
+
+All these information are contained in the file `Documentazione_APS_gruppo06_Cirillo_Fasolino.pdf`
+    
 
 * * *
 
@@ -103,56 +124,91 @@ You can find full documentation in the `docs/` folder, including:
 --------------------
 
 ```
-📦 uni-trust
-├── 📁 WP1_Model
-│   └── System model, actors, properties, and threat model
-├── 📁 WP2_Design
-│   └── System and protocol design (diagrams + pseudocode)
-├── 📁 WP3_SecurityAnalysis
-│   └── Security properties and formal analysis
-├── 📁 WP4_Implementation
-│   ├── Prototype code and scripts
-│   └── Performance analysis results
+📦 uni-trust-credential-management-system
 ├── 📁 docs
-│   └── Final report, presentation slides, diagrams
+│   ├── Documentazione_APS_gruppo06_Cirillo_Fasolino.pdf
+│   └── Presentazione_progetto_APS_gruppo06_Cirillo_Fasolino.pdf
+├── 📁 src
+│   ├── 📁 actors
+│   │   ├── Blockchain.py
+│   │   ├── CertifiedCommunicatingParty.py
+│   │   ├── Student.py
+│   │   ├── StudentInfo.py
+│   │   ├── University.py
+│   │   └── __init__.py
+│   ├── 📁 certificate_authority
+│   │   ├── CertificateAuthority.py
+│   │   ├── CertificateOfIdentity.py
+│   │   └── __init__.py
+│   ├── 📁 utils
+│   │   ├── AsymmetricEncryptionInformation.py
+│   │   ├── CryptoUtils.py
+│   │   ├── MerkleTree.py
+│   │   ├── SymmetricEncryptionInformation.py
+│   │   ├── __init__.py
+│   │   └── __init__.py
+│   ├── main_documentato.ipynb
+│   └── main.py
+├── LICENSE
 └── README.md
 ```
 
 * * *
 
-🧑‍💻 Team – University of Salerno
----------------------------------
+📸 System Overview Snapshot
+---------------------------
 
-* [@francescopiocirillo]#https://github.com/francescopiocirillo
-* [@alefaso-lucky](#https://github.com/alefaso-lucky)
+<img width="1724" height="968" alt="image" src="https://github.com/user-attachments/assets/5ea3cb39-696e-4209-bbff-7f7b58c5a0e5" />
 
 * * *
 
-🚀 How to Run the Prototype
-----------------------------
+👥 Team 6 – University of Salerno
+---------------------------------
 
-1. Clone the repo:
+* [@francescopiocirillo](https://github.com/francescopiocirillo)
+    
+* [@alefaso-lucky](https://github.com/alefaso-lucky)
+    
 
-   ```bash
-   git clone https://github.com/your-org/uni-trust.git
-   cd uni-trust/WP4_Implementation/
-   ```
+* * *
 
-2. Follow the instructions in the `README.md` inside the implementation folder to run the simulation.
+🚀 How to Run Locally
+---------------------
+
+1. Clone the repository
+    
+    ```bash
+    git clone https://github.com/francescopiocirillo/uni-trust-credential-management-system.git
+    ```
+    
+2. Install dependencies
+    
+    ```bash
+    pip install -r requirements.txt
+    ```
+    
+3. Run the simulation notebook
+    
+    ```bash
+    jupyter notebook main_documentato.ipynb
+    ```
+    
 
 ### 🧩 Development Environment
 
-- 💻 Python 3.x
-- 🔐 Cryptographic library: to be defined
-- 📦 VC/DID libraries: to be defined
+* 🐍 Python version: **3.12+**
+    
+* 🔐 Cryptography library: **cryptography**
+    
+* 🪙 Blockchain simulation through a simple class for revocation list
+    
 
 * * *
 
 📬 Contacts
 -----------
 
-Have questions, suggestions, or want to collaborate?  
-Feel free to contribute or open an **issue** on GitHub!
+✉️ Got feedback or want to contribute? Feel free to open an Issue or submit a Pull Request!
 
 * * *
 
@@ -160,7 +216,7 @@ Feel free to contribute or open an **issue** on GitHub!
 -----------
 
 ```
-Decentralized Credential System, Academic Verifiable Credentials, Erasmus Credential Sharing, DID VC System, W3C Verifiable Credentials, Privacy-Preserving Identity, Student Identity Blockchain, Credential Revocation, Secure University Credential System, Identity Wallet for Education, Cross-Border Credential System, Secure Credential Verification, Zero Knowledge Credentials, Decentralized Identity for Students, Italian University Software Project, Privacy in Academic Mobility
+Decentralized Credential Management, Academic Credentials, Merkle Tree Credentials, Blockchain Revocation, Selective Disclosure, Privacy-Preserving Credentials, Secure Key Exchange Protocol, RSA & AES Encryption, Python Cryptography Project, Erasmus Credential Sharing, Certificate Revocation List Blockchain, Secure University Data Exchange, Project Work Algorithms and Protocols for Security, Cryptography-Based Credential System, Merkle Proof Verification, Student Credential Privacy, University of Salerno Project
 ```
 
 * * *
@@ -168,7 +224,7 @@ Decentralized Credential System, Academic Verifiable Credentials, Erasmus Creden
 📄 License
 ----------
 
-This project is licensed under the **MIT License**, a permissive open-source license that allows anyone to use, modify, and distribute the software freely — as long as credit is given and the original license is included.
+This project is licensed under the **MIT License**, a permissive open-source license that allows anyone to use, modify, and distribute the software freely, as long as credit is given and the original license is included.
 
 > In plain terms: **use it, build on it, just don’t blame us if something breaks**.
 
