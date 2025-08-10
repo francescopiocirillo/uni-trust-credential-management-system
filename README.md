@@ -147,8 +147,8 @@ All these information are contained in the file `Documentazione_APS_gruppo06_Cir
 │   │   ├── SymmetricEncryptionInformation.py
 │   │   ├── __init__.py
 │   │   └── __init__.py
+│   ├── main_documentato.ipynb
 │   └── main.py
-├── main_documentato.ipynb
 ├── LICENSE
 └── README.md
 ```
