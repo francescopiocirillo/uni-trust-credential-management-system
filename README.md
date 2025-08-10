@@ -1,7 +1,7 @@
 🔐 Uni-Trust: Decentralized Academic Credential System
 =====================================================
 
-> 🚀 A **decentralized academic credential sharing system** with **selective disclosure** and **revocation support**, implemented using **Merkle Trees**, **blockchain-based revocation lists**, and **secure key exchange protocols**. Designed and developed as part of a university project for the _Algorithms and Protocols for Security_ course.
+🚀 A **decentralized academic credential sharing system** with **selective disclosure** and **revocation support**, implemented using **Merkle Trees**, **blockchain-based revocation lists**, and **secure key exchange protocols**. Designed and developed as part of a university project for the _Algorithms and Protocols for Security_ course.
 
 > Demonstrated ability to design and implement secure, privacy-preserving credential management systems using cryptographic protocols, blockchain-based revocation, and Merkle Tree–based selective disclosure.
 
