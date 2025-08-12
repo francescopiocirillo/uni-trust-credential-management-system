@@ -128,8 +128,9 @@ All these information are contained in the file `Documentazione_APS_gruppo06_Cir
 ```
 📦 uni-trust-credential-management-system
 ├── 📁 docs
-│   ├── Documentazione_APS_gruppo06_Cirillo_Fasolino.pdf
-│   └── Presentazione_progetto_APS_gruppo06_Cirillo_Fasolino.pdf
+│   ├── project_presentation_ITALIAN.pdf
+│   ├── project_report_ENGLISH.pdf
+│   └── project_report_ITALIAN.pdf
 ├── 📁 src
 │   ├── 📁 actors
 │   │   ├── Blockchain.py
