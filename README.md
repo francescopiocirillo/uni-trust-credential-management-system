@@ -166,16 +166,6 @@ All these information are contained in the file `Documentazione_APS_gruppo06_Cir
 
 * * *
 
-👥 Team 6 – University of Salerno
----------------------------------
-
-* [@francescopiocirillo](https://github.com/francescopiocirillo)
-    
-* [@alefaso-lucky](https://github.com/alefaso-lucky)
-    
-
-* * *
-
 🚀 How to Run Locally
 ---------------------
 
