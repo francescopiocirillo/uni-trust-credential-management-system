@@ -5,8 +5,6 @@
 
 > Demonstrated ability to design and implement secure, privacy-preserving credential management systems using cryptographic protocols, blockchain-based revocation, and Merkle Tree–based selective disclosure.
 
-[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=francescopiocirillo&repo=uni-trust-credential-management-system)](https://github.com/francescopiocirillo/uni-trust-credential-management-system)
-
 * * *
 
 📌 Overview
